@@ -1,0 +1,3539 @@
+diff --git a/College Market V.2.xcodeproj/xcuserdata/adamessawi.xcuserdatad/xcschemes/xcschememanagement.plist b/College Market V.2.xcodeproj/xcuserdata/adamessawi.xcuserdatad/xcschemes/xcschememanagement.plist
+index e23d256..1f783db 100644
+--- a/College Market V.2.xcodeproj/xcuserdata/adamessawi.xcuserdatad/xcschemes/xcschememanagement.plist	
++++ b/College Market V.2.xcodeproj/xcuserdata/adamessawi.xcuserdatad/xcschemes/xcschememanagement.plist	
+@@ -9,6 +9,27 @@
+ 			<key>orderHint</key>
+ 			<integer>0</integer>
+ 		</dict>
++		<key>Promises (Playground) 1.xcscheme</key>
++		<dict>
++			<key>isShown</key>
++			<false/>
++			<key>orderHint</key>
++			<integer>2</integer>
++		</dict>
++		<key>Promises (Playground) 2.xcscheme</key>
++		<dict>
++			<key>isShown</key>
++			<false/>
++			<key>orderHint</key>
++			<integer>3</integer>
++		</dict>
++		<key>Promises (Playground).xcscheme</key>
++		<dict>
++			<key>isShown</key>
++			<false/>
++			<key>orderHint</key>
++			<integer>0</integer>
++		</dict>
+ 	</dict>
+ </dict>
+ </plist>
+diff --git a/College Market V.2/Core/Authenitcation/AuthenticationHeaderView.swift b/College Market V.2/Core/Authenitcation/AuthenticationHeaderView.swift
+new file mode 100644
+index 0000000..6425ec8
+--- /dev/null
++++ b/College Market V.2/Core/Authenitcation/AuthenticationHeaderView.swift	
+@@ -0,0 +1,37 @@
++//
++//  AuthenticationHeaderView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct AuthenticationHeaderView: View {
++    let title1: String
++    let title2: String
++    var body: some View {
++        VStack(alignment: .leading) {
++            HStack { Spacer () }
++            Text(title1)
++                .font(.largeTitle)
++                .fontWeight(.semibold)
++            
++            Text(title2)
++                .font(.largeTitle)
++                .fontWeight(.semibold)
++            
++        }
++        .frame(height: 260)
++        .padding(.leading)
++        .background(Color(.systemBlue))
++        .foregroundColor(.white)
++        .clipShape(RoundedShape(corners: [.bottomRight]))
++    }
++}
++
++struct AuthenticationHeaderView_Previews: PreviewProvider {
++    static var previews: some View {
++        AuthenticationHeaderView(title1: "Hello", title2: "Welcome back")
++    }
++}
+diff --git a/College Market V.2/Core/Authenitcation/Views/LoginView.swift b/College Market V.2/Core/Authenitcation/Views/LoginView.swift
+new file mode 100644
+index 0000000..d37e07d
+--- /dev/null
++++ b/College Market V.2/Core/Authenitcation/Views/LoginView.swift	
+@@ -0,0 +1,91 @@
++//
++//  LoginView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct LoginView: View {
++    @State private var email = ""
++    @State private var password = ""
++    @EnvironmentObject var viewmodel: AuthViewModel
++    var body: some View {
++        NavigationView{
++            VStack {
++                //HSTACk spacer means we can spread things out to both sides of the screen
++                AuthenticationHeaderView(title1: "Hello.", title2: "Welcome Back")
++                
++                
++                VStack(spacing: 40) {
++                    CustomInputField(imageName: "envelope", placeholderText: "Email", text: $email)
++                    CustomInputField(imageName: "lock", placeholderText: "Password",isSecureField: true, text: $password)
++                    
++                }
++                .padding(.horizontal, 32)
++                .padding(.top, 44)
++                
++                HStack {
++                    Spacer()
++                    
++                    NavigationLink {
++                        Text("Reset password view..")
++                    } label: {
++                        Text("Forgot password?")
++                            .font(.caption)
++                            .fontWeight(.semibold)
++                            .foregroundColor(Color(.systemBlue))
++                            .padding(.top)
++                            .padding(.trailing, 24)
++                    }
++                }
++                
++                
++                Button {
++                    viewmodel.login(withEmail: email, password: password)
++                } label: {
++                    Text("Sign In")
++                        .font(.headline)
++                        .foregroundColor(.white)
++                        .frame(width: 340, height: 50)
++                        .background(Color(.systemBlue))
++                        .clipShape(Capsule())
++                        .padding()
++                }
++                .shadow(color: .gray.opacity(0.5), radius: 10, x: 0, y: 0)
++                
++                
++                
++                
++                
++                Spacer()
++                
++                NavigationLink {
++                    RegistrationView()
++                        .navigationBarHidden(true)
++                }
++            label: {
++                HStack {
++                    Text("Dont have an account?")
++                        .font(.footnote)
++                    
++                    Text("sign up")
++                        .font(.footnote)
++                        .fontWeight(.semibold)
++                }
++            }
++            .padding(.bottom, 32)
++            .foregroundColor(Color(.systemBlue))
++                
++            }
++            .ignoresSafeArea()
++            .navigationBarHidden(true)
++        }
++    }
++}
++struct LoginView_Previews: PreviewProvider {
++    static var previews: some View {
++        LoginView()
++    }
++}
+diff --git a/College Market V.2/Core/Authenitcation/Views/ProfilePhotoSelectorView.swift b/College Market V.2/Core/Authenitcation/Views/ProfilePhotoSelectorView.swift
+new file mode 100644
+index 0000000..322f0e9
+--- /dev/null
++++ b/College Market V.2/Core/Authenitcation/Views/ProfilePhotoSelectorView.swift	
+@@ -0,0 +1,75 @@
++//
++//  ProfilePhotoSelectorView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/26/23.
++//
++
++import SwiftUI
++
++struct ProfilePhotoSelectorView: View {
++    @State private var showImagePicker = false
++    @State private var selectedImage: UIImage?
++    @State private var profileImage: Image?
++    @EnvironmentObject var viewmodel: AuthViewModel
++    var body: some View {
++        VStack {
++            AuthenticationHeaderView(title1: "Setup account", title2: "Selected a profile photo")
++            Button{
++                showImagePicker.toggle()
++            } label: {
++                if let profileImage = profileImage{
++                    profileImage
++                        .resizable()
++                       // .renderingMode(.template)
++                        //.foregroundColor(Color(.systemBlue))
++                        .scaledToFill()
++                        .frame(width: 180, height: 180)
++                        .padding(.top, 44)
++                        .clipShape(Circle())
++                        
++                }
++                else {
++                    Text("Add Image")
++                }
++                
++            }
++         //   when sheet dismisses, load our profile image into that spot.
++            .sheet(isPresented: $showImagePicker, onDismiss: loadImage) {
++                ImagePicker(selectedImage: $selectedImage)
++                 
++            }
++            .padding(.top, 44)
++            
++            if let selectedImage = selectedImage{
++                Button {
++                    viewmodel.uploadProfileImage(selectedImage)
++                } label: {
++                    Text("Continue")
++                        .font(.headline)
++                        .foregroundColor(.white)
++                        .frame(width: 340, height: 50)
++                        .background(Color(.systemBlue))
++                        .clipShape(Capsule())
++                        .padding()
++                }
++                .shadow(color: .gray.opacity(0.5), radius: 10, x: 0, y: 0)
++            }
++            Spacer()
++        }
++        .ignoresSafeArea()
++    }
++    
++    func loadImage() {
++        guard let selectedImage = selectedImage else { return }
++        profileImage = Image(uiImage: selectedImage)
++    }
++}
++
++        
++
++struct ProfilePhotoSelectorView_Previews: PreviewProvider {
++    static var previews: some View {
++        ProfilePhotoSelectorView()
++    }
++}
+diff --git a/College Market V.2/Core/Authenitcation/Views/RegistrationView.swift b/College Market V.2/Core/Authenitcation/Views/RegistrationView.swift
+new file mode 100644
+index 0000000..4e5dbc9
+--- /dev/null
++++ b/College Market V.2/Core/Authenitcation/Views/RegistrationView.swift	
+@@ -0,0 +1,83 @@
++//
++//  RegistrationView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++
++struct RegistrationView: View {
++    @State private var email = ""
++    @State private var username = ""
++    @State private var fullname = ""
++    @State private var password = ""
++    @Environment(\.presentationMode) var presentationMode
++    @EnvironmentObject var viewModel: AuthViewModel
++    var body: some View {
++        NavigationView{
++            VStack {
++                
++                
++                NavigationLink(destination: ProfilePhotoSelectorView(), isActive: $viewModel.didAuthenticateUser, label: { })
++                
++                
++                
++                AuthenticationHeaderView(title1: "Get started.", title2: "Create your account")
++                
++                
++                VStack(spacing: 40) {
++                    CustomInputField(imageName: "envelope", placeholderText: "Email", text: $email)
++                    CustomInputField(imageName: "person", placeholderText: "Username", text: $username)
++                    CustomInputField(imageName: "person", placeholderText: "Full Name", text: $fullname)
++                    CustomInputField(imageName: "lock", placeholderText: "Password",isSecureField: true, text: $password)
++                    
++                }
++                .padding(32)
++                
++                Button {
++                    viewModel.register(withEmail: email, password: password, fullname: fullname, username: username)
++                } label: {
++                    Text("Sign Up")
++                        .font(.headline)
++                        .foregroundColor(.white)
++                        .frame(width: 340, height: 50)
++                        .background(Color(.systemBlue))
++                        .clipShape(Capsule())
++                        .padding()
++                }
++                .shadow(color: .gray.opacity(0.5), radius: 10, x: 0, y: 0)
++                Spacer()
++                
++                Button {
++                    presentationMode.wrappedValue.dismiss()
++                } label: {
++                    HStack {
++                        Text("Already have an account?")
++                            .font(.footnote)
++                        
++                        Text("Sign In")
++                            .font(.footnote)
++                            .fontWeight(.semibold)
++                    }
++                }
++                .padding(.bottom, 32)
++                
++            }
++            .ignoresSafeArea()
++        }
++        
++    }
++}
++
++struct RegistrationView_Previews: PreviewProvider {
++    static var previews: some View {
++        let viewModel = AuthViewModel()
++        
++        RegistrationView()
++            .environmentObject(viewModel)
++            
++            
++    }
++}
+diff --git a/College Market V.2/Core/Components/CustomInputField.swift b/College Market V.2/Core/Components/CustomInputField.swift
+new file mode 100644
+index 0000000..2c582ae
+--- /dev/null
++++ b/College Market V.2/Core/Components/CustomInputField.swift	
+@@ -0,0 +1,41 @@
++//
++//  CustomInputField.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct CustomInputField: View {
++    let imageName: String
++    let placeholderText: String
++    var isSecureField: Bool? = false
++    @Binding var text: String
++    var body: some View {
++        VStack {
++            HStack {
++                Image(systemName: imageName)
++                    .resizable()
++                    .scaledToFit()
++                    .frame(width: 20, height: 20)
++                    .foregroundColor(Color(.darkGray))
++                
++                if isSecureField ?? false {
++                    SecureField(placeholderText, text: $text)
++                } else{
++                    TextField(placeholderText, text:$text)
++                }
++            }
++            
++            Divider()
++                .background(Color(.darkGray))
++        }
++    }
++}
++
++struct CustomInputField_Previews: PreviewProvider {
++    static var previews: some View {
++        CustomInputField(imageName: "envelope", placeholderText: "Email",isSecureField: false, text: .constant(""))
++    }
++}
+diff --git a/College Market V.2/Core/Components/RoundedShape.swift b/College Market V.2/Core/Components/RoundedShape.swift
+new file mode 100644
+index 0000000..706fd08
+--- /dev/null
++++ b/College Market V.2/Core/Components/RoundedShape.swift	
+@@ -0,0 +1,19 @@
++//
++//  RoundedShape.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct RoundedShape: Shape {
++    var corners: UIRectCorner
++    //custom modifer that allows us to round out any shape we want.
++    func path(in rect: CGRect) -> Path {
++        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 80, height: 80))
++        
++        return Path(path.cgPath)
++    }
++    
++}
+diff --git a/College Market V.2/Core/Components/SearchBar.swift b/College Market V.2/Core/Components/SearchBar.swift
+new file mode 100644
+index 0000000..4637cbb
+--- /dev/null
++++ b/College Market V.2/Core/Components/SearchBar.swift	
+@@ -0,0 +1,35 @@
++//
++//  SearchBar.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++
++import SwiftUI
++
++struct SearchBar: View {
++    @Binding var text: String
++    var body: some View {
++        HStack {
++            TextField("Search...", text:$text)
++                .padding(8)
++                .padding(.horizontal, 24)
++                .background(Color(.systemGray6))
++                .overlay(
++                    HStack {
++                        Image(systemName: "magnifyingglass")
++                            .foregroundColor(.gray)
++                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
++                            .padding(.leading, 8)
++                    }
++            )
++        }
++        .padding(.horizontal, 4)
++    }
++}
++
++struct SearchBar_Previews: PreviewProvider {
++    static var previews: some View {
++        SearchBar(text: .constant(""))
++    }
++}
+diff --git a/College Market V.2/Core/Components/Tweets/ImageView.swift b/College Market V.2/Core/Components/Tweets/ImageView.swift
+new file mode 100644
+index 0000000..696b4b2
+--- /dev/null
++++ b/College Market V.2/Core/Components/Tweets/ImageView.swift	
+@@ -0,0 +1,34 @@
++//
++//  ImageView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/1/24.
++//
++
++import SwiftUI
++
++struct ImageView: View {
++    let url: String
++
++    var body: some View {
++        // You may use a library like SDWebImageSwiftUI or KingfisherSwiftUI for image loading
++        // Make sure to handle errors and placeholder images appropriately
++        AsyncImage(url: URL(string: url)) { phase in
++            switch phase {
++            case .empty:
++                ProgressView()
++            case .success(let image):
++                image
++                    .resizable()
++                    .aspectRatio(contentMode: .fit)
++            case .failure:
++                Image(systemName: "photo")
++                    .resizable()
++                    .aspectRatio(contentMode: .fit)
++            @unknown default:
++                EmptyView()
++            }
++        }
++    }
++}
++
+diff --git a/College Market V.2/Core/Components/Tweets/TextArea.swift b/College Market V.2/Core/Components/Tweets/TextArea.swift
+new file mode 100644
+index 0000000..3d324bf
+--- /dev/null
++++ b/College Market V.2/Core/Components/Tweets/TextArea.swift	
+@@ -0,0 +1,34 @@
++//
++//  TextArea.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct TextArea: View {
++    @Binding var text: String
++    let placeholder: String
++    
++    init(_ placeholder: String, text: Binding<String>) {
++        self.placeholder = placeholder
++        self._text = text
++        UITextView.appearance().backgroundColor = .clear
++    }
++    var body: some View {
++        ZStack(alignment: .topLeading) {
++            if text.isEmpty {
++                Text(placeholder)
++                    .foregroundColor(Color(.placeholderText))
++                    .padding(.horizontal, 8)
++                    .padding(.vertical, 12)
++            }
++            
++            TextEditor(text: $text)
++                .padding(4)
++        }
++        .font(.body)
++    }
++    
++}
+diff --git a/College Market V.2/Core/Components/Tweets/TweetRowView.swift b/College Market V.2/Core/Components/Tweets/TweetRowView.swift
+new file mode 100644
+index 0000000..7f8bce0
+--- /dev/null
++++ b/College Market V.2/Core/Components/Tweets/TweetRowView.swift	
+@@ -0,0 +1,177 @@
++//
++//  TweetRowView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++import Kingfisher
++struct TweetRowView: View {
++    // @Binding var Images: [UIImage]
++    let tweet: Tweet
++    let images: [String]
++    
++    //added images: [UIImage]
++    var body: some View {
++        VStack(alignment: .leading) {
++            if let user = tweet.user {
++                HStack(alignment: .top, spacing: 12) {
++                    
++                    
++                
++                        
++                        KFImage(URL(string: user.profileImageUrl))
++                            .resizable()
++                            .scaledToFill()
++                            .clipShape(Circle())
++                            .frame(width: 30, height: 30)
++                        
++                        
++                        
++                        
++                    
++                    
++                    //user info and tweet caption
++                    VStack(alignment: .leading, spacing: 4){
++                        
++                        HStack {
++                            Text(user.fullname)
++                                .font(.subheadline).bold()
++                            Text("@\(user.username)")
++                                .foregroundColor(.gray)
++                                .font(.caption)
++                            
++                            // Text("2w")
++                            //  .foregroundColor(.gray)
++                            //  .font(.caption)
++                        }
++                    }
++                }
++                        
++                        
++                        
++                        
++                        // Text(tweet.caption)
++                        // .font(.subheadline)
++                        //  .multilineTextAlignment(.leading)
++                        /*
++                         ForEach(tweet.imageUrls ?? [], id: \.self) { imageUrl in
++                         // Assuming you have a custom ImageView that can load an image from a URL
++                         ImageView(url: imageUrl)
++                         .aspectRatio(contentMode: .fit)
++                         .frame(height: 40)
++                         
++                         */
++                    
++                //Group{
++                //showcase a default image if no image is available.
++                    ImageView(url: tweet.imageUrls?[0] ?? "")
++                        .aspectRatio(contentMode: .fill)
++                        .frame(width: 170, height: 170)
++                        .cornerRadius(8)
++                        .overlay(
++                            VStack {
++                                Spacer()
++                                HStack {
++                                    Spacer()
++                                    Ellipse()
++                                        .foregroundColor(.white)
++                                        .frame(width: 45, height: 30)
++                                    
++                                    
++                                    
++                                        .overlay (
++                                            Ellipse()
++                                                .stroke(Color.green, lineWidth: 1)
++                                        )
++                                    
++                                        .overlay(
++                                            Text("$\(tweet.likes)")
++                                                .foregroundColor(.green)
++                                                .font(.system(size: 8))
++                                                .padding(4)
++                                                .bold()
++                                        )
++                                }
++                                .offset(x: -10, y: -15)
++                            }
++                        )
++                    
++                
++                
++                
++                if tweet.caption.count > 50 {
++                    Text(String(tweet.caption.prefix(50)) + "...")
++                        .font(.subheadline)
++                        .multilineTextAlignment(.leading)
++                }
++                
++                else {
++                    Text(tweet.caption)
++                        .font(.subheadline)
++                        .multilineTextAlignment(.leading)
++                }
++                
++              //  Text(tweet.condition)
++              //  }}
++                //.offset(x: 27)
++                            
++                        }
++                 //  Spacer()
++                    }
++        
++                
++                }
++            }
++        
++    
++    /*
++     HStack {
++     Button {
++     
++     } label: {
++     Image(systemName: "bubble.left")
++     .font(.subheadline)
++     }
++     Spacer()
++     Button {
++     
++     } label: {
++     Image(systemName: "bubble.left")
++     .font(.subheadline)
++     }
++     Spacer()
++     Button {
++     
++     } label: {
++     Image(systemName: "bubble.left")
++     .font(.subheadline)
++     }
++     Spacer()
++     Button {
++     
++     } label: {
++     Image(systemName: "bubble.left")
++     .font(.subheadline)
++     }
++     }
++     .foregroundColor(.gray)
++     .padding()
++     
++     //   Divider()
++     }
++     
++     }
++     }
++     */
++    
++    /*
++    struct TweetRowView_Previews: PreviewProvider {
++    static var previews: some View {
++    TweetRowView()
++      }
++    }
++    
++    */
++
+diff --git a/College Market V.2/Core/Explore/ExploreView.swift b/College Market V.2/Core/Explore/ExploreView.swift
+new file mode 100644
+index 0000000..e151c66
+--- /dev/null
++++ b/College Market V.2/Core/Explore/ExploreView.swift	
+@@ -0,0 +1,44 @@
++//
++//  ExploreView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++
++struct ExploreView: View {
++    @ObservedObject var viewModel = ExploreViewModel()
++    
++    var body: some View {
++        NavigationView {
++            VStack {
++                SearchBar(text: $viewModel.searchText )
++                    .padding()
++                ScrollView {
++                    LazyVStack {
++                        ForEach(viewModel.searchbleUsers) { user in
++                            
++                            NavigationLink {
++                               ProfileView(user: user)
++                                
++                            }
++                        label: {
++                            UserRowView(user: user)
++                                
++                        }
++                        }
++                    }
++                }
++            }
++            .navigationTitle("Explore")
++            .navigationBarTitleDisplayMode(.inline)
++       }
++    }
++}
++
++struct ExploreView_Previews: PreviewProvider {
++    static var previews: some View {
++        ExploreView()
++    }
++}
+diff --git a/College Market V.2/Core/Explore/ViewModels/ExploreViewModel.swift b/College Market V.2/Core/Explore/ViewModels/ExploreViewModel.swift
+new file mode 100644
+index 0000000..6ea803b
+--- /dev/null
++++ b/College Market V.2/Core/Explore/ViewModels/ExploreViewModel.swift	
+@@ -0,0 +1,41 @@
++//
++//  ExploreViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++
++import Foundation
++
++class ExploreViewModel: ObservableObject {
++    @Published var users = [User]()
++    @Published var searchText = ""
++    
++    var searchbleUsers: [User] {
++        if searchText.isEmpty {
++            return users
++        } else {
++            let lowercasedQuery = searchText.lowercased()
++            
++            return users.filter({
++                
++                $0.username.contains(lowercasedQuery) ||
++                $0.fullname.lowercased().contains(lowercasedQuery)
++            })
++        }
++    }
++    
++    let service = UserService()
++    
++    init() {
++        fetchUsers()
++        
++    }
++    
++    func fetchUsers() {
++        service.fetchUsers { users in
++            self.users = users
++            
++        }
++    }
++}
+diff --git a/College Market V.2/Core/Feed/View/FeedView.swift b/College Market V.2/Core/Feed/View/FeedView.swift
+new file mode 100644
+index 0000000..19bcbdb
+--- /dev/null
++++ b/College Market V.2/Core/Feed/View/FeedView.swift	
+@@ -0,0 +1,182 @@
++//
++//  FeedView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++
++struct FeedView: View {
++    @State private var isShowingNewView = false
++    @Environment(\.presentationMode) var PresentationMode
++    @State private var showNewView = false
++    @State private var showNewTweetView = false
++    @ObservedObject var viewModel = FeedViewModel()
++    @State private var selectedTweet: Tweet?
++ 
++    var body: some View {
++        /*
++        ChatView(viewModel: AuthViewModel())
++         */
++        ZStack(alignment: .bottomTrailing){
++            ScrollView{
++                
++                LazyVGrid(columns: [GridItem(), GridItem()], spacing:15){
++                    
++                    ForEach(viewModel.tweets) { tweet in
++                        
++                        Button {
++                            //new
++                            selectedTweet = tweet
++                            isShowingNewView.toggle()
++                            
++                            
++                        } label: {
++                            VStack {
++                                TweetRowView(tweet: tweet, images: tweet.imageUrls ?? [])
++                                    .padding(8)
++                            }
++                            
++                            
++                            
++                            // .foregroundColor(Color(.black))
++                            
++                        }
++                        .frame(maxWidth: .infinity, maxHeight: .infinity)
++                        //  .background(Color.white)
++                        
++                        //  .overlay(
++                        //     RoundedRectangle(cornerRadius: 20) // Adjust corner radius as needed
++                        //       .stroke(Color.gray, lineWidth: 1)
++                        //  )
++                        
++                        
++                        
++                        /*
++                         .fullScreenCover(isPresented: $isShowingNewView, content: {
++                         PostStruct2(tweet: selectedTweet ?? tweet)
++                         //ViewTweetsGoin(tweet: selectedTweet ?? tweet)
++                         //    ViewTweetsGoInPreview()
++                         
++                         
++                         })
++                         
++                         }
++                         .padding(10)
++                         */
++                        .fullScreenCover(isPresented: Binding(
++                            get: { isShowingNewView },
++                            set: { newValue in
++                                if newValue {
++                                    isShowingNewView = false
++                                    DispatchQueue.main.async {
++                                        isShowingNewView = true
++                                    }
++                                } else {
++                                    isShowingNewView = false
++                                }
++                            }
++                        )) {
++                            //PostStruct2(tweet: selectedTweet ?? tweet)
++                            //ViewTweetsGoInPreview(tweet: selectedTweet ?? tweet)
++                            AfterclickingonpostView(tweet: selectedTweet ?? tweet)
++                        }
++                    }
++                    .padding(10)
++                }
++            }
++            .background(Color(.white))
++            
++     //   }
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++          //      }
++                
++        //    }
++       //     .background(Color(.white))
++            //new
++            
++            
++            
++            
++            //passing a whole nother view into
++            //a foreach. Didnt knwoi you could do this
++            /*
++             ForEach(viewModel.tweets) { tweet in
++             // NavigationLink(destination: ViewTweetsGoin(tweet: tweet)) {
++             
++             
++             
++             TweetRowView(tweet: tweet)
++             .padding()
++             .foregroundColor(Color(.black))
++             // .foregroundColor(Color(.black))
++             }
++             //.foregroundColor(Color(.black))
++             
++             }
++             }
++             
++             
++             */
++            
++            
++            Button {
++                showNewTweetView.toggle()
++            } label: {
++                Image("home")
++                    .resizable()
++                    .renderingMode(.template)
++                    .frame(width: 28, height: 28)
++                    .padding()
++            }
++            .background(Color(.systemBlue))
++            .foregroundColor(.white)
++            .clipShape(Circle())
++            .padding()
++            .fullScreenCover(isPresented: $showNewTweetView) {
++                NewTweetView()
++                
++                
++                
++                
++                
++            }
++        }
++        .navigationBarTitleDisplayMode(.inline)
++    }
++}
++
++//}
++/*
++struct FeedView_Previews: PreviewProvider {
++    static var previews: some View {
++        FeedView()
++    }
++}
++*/
++
++extension View {
++    func withoutAnimation(action: @escaping () -> Void) {
++        var transaction = Transaction()
++        transaction.disablesAnimations = true
++        withTransaction(transaction) {
++            action()
++        }
++    }
++}
+diff --git a/College Market V.2/Core/Feed/ViewModels/FeedViewModel.swift b/College Market V.2/Core/Feed/ViewModels/FeedViewModel.swift
+new file mode 100644
+index 0000000..800fdeb
+--- /dev/null
++++ b/College Market V.2/Core/Feed/ViewModels/FeedViewModel.swift	
+@@ -0,0 +1,38 @@
++//
++//  FeedViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/28/23.
++//
++
++import Foundation
++
++class FeedViewModel: ObservableObject {
++    @Published var tweets = [Tweet]()
++    
++    let service = TweetService()
++    let userService = UserService()
++    
++    init(){
++        fetchTweets()
++    }
++    
++    func fetchTweets() {
++        service.fetchTweets() { tweets in
++            self.tweets = tweets
++            
++            for i in 0 ..< tweets.count {
++                let uid = tweets[i].uid
++                
++                self.userService.fetchUser(withUid: uid) { user in
++                    self.tweets[i].user = user
++                }
++            }
++                    
++                }
++                
++            }
++        }
++    
++    
++    //[tweet1, tweet2, tweet3, tweet4]
+diff --git a/College Market V.2/Core/MainTab/MainTabView.swift b/College Market V.2/Core/MainTab/MainTabView.swift
+new file mode 100644
+index 0000000..f6b3e3e
+--- /dev/null
++++ b/College Market V.2/Core/MainTab/MainTabView.swift	
+@@ -0,0 +1,74 @@
++//
++//  MainTabView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++
++struct MainTabView: View {
++    @State private var selectedIndex = 0
++    var body: some View {
++        //selected index so we can
++        //keep track of what tab a user
++        //is on
++        TabView(selection: $selectedIndex) {
++            FeedView()
++                .onTapGesture {
++                    self.selectedIndex = 0
++                    
++                }
++                .tabItem {
++                    Image(systemName: "house")
++                    
++                }
++                .tag(0)
++            
++            
++            
++            ExploreView()
++                .onTapGesture {
++                    self.selectedIndex = 1
++                }
++                .tabItem {
++                    Image(systemName: "house")
++                    
++                }
++                .tag(1)
++            
++            
++            
++            MessagesView()
++                .onTapGesture {
++                    self.selectedIndex = 2
++                }
++                .tabItem{
++                    Image(systemName: "house")
++                    
++                }
++                .tag(2)
++            
++            
++            
++            NotificationsView()
++                .onTapGesture {
++                    self.selectedIndex = 3
++                }
++                .tabItem{
++                    Image(systemName: "house")
++                    
++                }
++            .tag(3)
++            
++        }
++    }
++}
++
++/*
++struct MainTabView_Previews: PreviewProvider {
++    static var previews: some View {
++        MainTabView()
++    }
++}
++*/
+diff --git a/College Market V.2/Core/Messages/MessagesView.swift b/College Market V.2/Core/Messages/MessagesView.swift
+new file mode 100644
+index 0000000..bb59ec2
+--- /dev/null
++++ b/College Market V.2/Core/Messages/MessagesView.swift	
+@@ -0,0 +1,20 @@
++//
++//  MessagesView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++
++struct MessagesView: View {
++    var body: some View {
++        Text("Messages")
++    }
++}
++
++struct MessagesView_Previews: PreviewProvider {
++    static var previews: some View {
++        MessagesView()
++    }
++}
+diff --git a/College Market V.2/Core/Notifications/NotificationsView.swift b/College Market V.2/Core/Notifications/NotificationsView.swift
+new file mode 100644
+index 0000000..4c6c45a
+--- /dev/null
++++ b/College Market V.2/Core/Notifications/NotificationsView.swift	
+@@ -0,0 +1,20 @@
++//
++//  NotificationsView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++
++struct NotificationsView: View {
++    var body: some View {
++        Text("Notifications")
++    }
++}
++
++struct NotificationsView_Previews: PreviewProvider {
++    static var previews: some View {
++        NotificationsView()
++    }
++}
+diff --git a/College Market V.2/Core/Profile/ViewModels/ProfileViewModel.swift b/College Market V.2/Core/Profile/ViewModels/ProfileViewModel.swift
+new file mode 100644
+index 0000000..837f1ea
+--- /dev/null
++++ b/College Market V.2/Core/Profile/ViewModels/ProfileViewModel.swift	
+@@ -0,0 +1,34 @@
++//
++//  ProfileViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/28/23.
++//
++
++import Foundation
++
++class ProfileViewModel: ObservableObject {
++    @Published var tweets = [Tweet]()
++    private let service = TweetService()
++    let user: User
++    
++    
++    init (user: User) {
++        self.user = user
++        self.fetchUserTweets()
++    }
++    
++    func fetchUserTweets() {
++        guard let uid = user.id else { return }
++        service.fetchTweets(forUid: uid) { tweets in
++            
++            self.tweets = tweets
++            
++            for i in 0 ..< tweets.count {
++                self.tweets[i].user = self.user
++                
++                
++            }
++        }
++    }
++}
+diff --git a/College Market V.2/Core/Profile/ViewModels/TweetFilterViewModel.swift b/College Market V.2/Core/Profile/ViewModels/TweetFilterViewModel.swift
+new file mode 100644
+index 0000000..5a8426e
+--- /dev/null
++++ b/College Market V.2/Core/Profile/ViewModels/TweetFilterViewModel.swift	
+@@ -0,0 +1,25 @@
++//
++//  TweetFilterViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import Foundation
++
++enum TweetFilterViewModel: Int, CaseIterable {
++    case MyPosts
++    case replies
++  //  case likes
++    
++    
++    var title: String {
++        switch self {
++        case .MyPosts: return "My Posts"
++        case .replies: return "Saved Items"
++       // case .likes: return "Likes"
++            
++        }
++    }
++}
++
+diff --git a/College Market V.2/Core/Profile/Views/ProfileView.swift b/College Market V.2/Core/Profile/Views/ProfileView.swift
+new file mode 100644
+index 0000000..a61b51e
+--- /dev/null
++++ b/College Market V.2/Core/Profile/Views/ProfileView.swift	
+@@ -0,0 +1,197 @@
++//
++//  ProfileView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++import Kingfisher
++
++struct ProfileView: View {
++    @State private var selectedFilter: TweetFilterViewModel = .MyPosts
++    @Environment(\.presentationMode) var mode
++    @Namespace var animation
++    @ObservedObject var viewModel: ProfileViewModel
++    
++    
++    
++    init(user: User) {
++        self.viewModel = ProfileViewModel(user: user)
++    }
++    
++    
++    var body: some View {
++        VStack(alignment: .leading) {
++            headerView
++            
++            actionButtons
++            
++           // userInfoDetails
++            Group {
++                tweetFilterBar
++                
++                ScrollView {
++                    LazyVStack {
++                        ForEach(viewModel.tweets) { tweet in
++                            TweetRowView(tweet: tweet, images: tweet.imageUrls ?? [])
++                                .padding()
++                        }
++                        
++                        
++                    }
++                }
++            }
++            .offset(y: 30)
++            Spacer()
++        }
++        .navigationBarHidden(true)
++    }
++}
++
++/*
++struct ProfileView_Previews: PreviewProvider {
++    static var previews: some View {
++)
++    }
++}
++*/
++extension ProfileView {
++    var headerView: some View {
++        
++            ZStack(alignment: .bottomLeading) {
++                Color(.systemBlue)
++                    .ignoresSafeArea()
++                VStack{
++                    Button {
++                        mode.wrappedValue.dismiss()
++                        
++                    }
++                label: {
++                    Image(systemName: "arrow.left")
++                        .resizable()
++                        .frame(width:20, height: 16)
++                        .foregroundColor(.white)
++                        .offset(x:16, y: -4)
++                }
++                    
++                    KFImage(URL(string: viewModel.user.profileImageUrl))
++                        .resizable()
++                        .scaledToFill()
++                        .clipShape(Circle())
++                        .frame(width: 72, height: 72)
++                        .offset(x:16, y:24)
++                }
++            }
++            .frame(height: 96)
++        }
++    
++    var actionButtons: some View {
++        
++        HStack {
++          //  Spacer()
++            
++          //  Image(systemName: "bell.badge")
++           //     .font(.title3)
++           //     .padding(6)
++             //   .overlay(Circle().stroke(Color.gray, lineWidth: 0.75))
++            Spacer()
++            Button {
++                
++            } label: {
++                Text("Edit Profile")
++                    .font(.subheadline.bold())
++                    .frame(width: 120, height: 32)
++                    .overlay(RoundedRectangle(cornerRadius:20).stroke(Color.gray, lineWidth:0.75))
++               
++            }
++
++        }
++        .padding(.trailing)
++    }
++   
++    /*
++    var userInfoDetails: some View {
++        VStack(alignment: .leading, spacing: 4) {
++            HStack {
++                Text(viewModel.user.fullname)
++                    .font(.title2).bold()
++                Image(systemName: "checkmark.seal.fill")
++                    .foregroundColor(Color(.systemBlue))
++            }
++            
++            Text("@\(viewModel.user.username)")
++                .font(.subheadline)
++                .foregroundColor(.gray)
++            
++       
++            
++            HStack(spacing: 24) {
++                HStack {
++                    
++                }
++                
++                HStack {
++                    
++                }
++                
++            }
++            .foregroundColor(.gray)
++            .font(.caption)
++            
++            //UserStatsView()
++             //   .padding(.vertical)
++        }
++        .padding(.horizontal)
++        
++        
++        
++        
++    }
++     */
++    
++    var tweetFilterBar: some View {
++        
++        HStack {
++            
++            ForEach(TweetFilterViewModel.allCases, id: \.rawValue) {
++                item in
++                VStack{
++                    Text(item.title)
++                        .font(.subheadline)
++                        //if the item equals the filter we hover over, make it bold else make it regular
++                        .fontWeight(selectedFilter == item ? .semibold : .regular )
++                        .foregroundColor(selectedFilter == item ? .black : .gray)
++                    
++                    if selectedFilter == item {
++                        //gives everything on the same level if we have capsule on everything and just change background color
++                        Capsule()
++                            .foregroundColor(Color(.systemBlue))
++                            .frame(height: 3)
++                        //makes slide over smoothly
++                            .matchedGeometryEffect(id: "filter", in: animation)
++                    }
++                    else {
++                        Capsule()
++                            .foregroundColor(Color(.clear))
++                            .frame(height: 3)
++                    }
++                }
++                
++                
++                .onTapGesture {
++                    withAnimation(.easeInOut) {
++                        self.selectedFilter = item
++                    }
++                
++                    
++                }
++            }
++        }
++        .overlay(Divider().offset(x: 0, y: 16))
++       
++    }
++        
++    }
++
++
+diff --git a/College Market V.2/Core/SideMenu/ViewModel/SideMenuViewModel.swift b/College Market V.2/Core/SideMenu/ViewModel/SideMenuViewModel.swift
+new file mode 100644
+index 0000000..e32124f
+--- /dev/null
++++ b/College Market V.2/Core/SideMenu/ViewModel/SideMenuViewModel.swift	
+@@ -0,0 +1,35 @@
++//
++//  SideMenuViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import Foundation
++
++enum SideMenuViewModel: Int, CaseIterable {
++    case profile
++ //   case lists
++    case bookmarks
++    case logout
++    
++    var title: String {
++        switch self {
++        case .profile: return "Profile"
++      //  case .lists: return "Lists"
++        case .bookmarks: return "Saved Items"
++        case .logout: return "Logout"
++        }
++    }
++    
++    var imageName: String {
++        switch self {
++        case .profile: return "person"
++       // case .lists: return "list.bullet"
++        case .bookmarks: return "bookmark"
++        case .logout: return "arrow.left.square"
++        }
++    }
++    //enums good for having list of strings.
++    
++}
+diff --git a/College Market V.2/Core/SideMenu/Views/SideMenuOptionRowView.swift b/College Market V.2/Core/SideMenu/Views/SideMenuOptionRowView.swift
+new file mode 100644
+index 0000000..c9b39a0
+--- /dev/null
++++ b/College Market V.2/Core/SideMenu/Views/SideMenuOptionRowView.swift	
+@@ -0,0 +1,36 @@
++//
++//  SideMenuOptionRowView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++
++struct SideMenuOptionRowView: View {
++    let viewModel: SideMenuViewModel
++    var body: some View {
++        
++        HStack(spacing: 16) {
++            Image(systemName: viewModel.imageName)
++                .font(.headline)
++                .foregroundColor(.gray)
++            Text(viewModel.title)
++                .foregroundColor(.black)
++                .font(.subheadline)
++            
++            Spacer()
++            
++        }
++        .frame(height: 40)
++        .padding(.horizontal)
++    }
++    
++    }
++
++
++struct SideMenuOptionRowView_Previews: PreviewProvider {
++    static var previews: some View {
++        SideMenuOptionRowView(viewModel: .profile)
++    }
++}
+diff --git a/College Market V.2/Core/SideMenu/Views/SideMenuView.swift b/College Market V.2/Core/SideMenu/Views/SideMenuView.swift
+new file mode 100644
+index 0000000..ea3ab22
+--- /dev/null
++++ b/College Market V.2/Core/SideMenu/Views/SideMenuView.swift	
+@@ -0,0 +1,79 @@
++//
++//  SideMenuView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++import Kingfisher
++
++struct SideMenuView: View {
++    
++    @EnvironmentObject var authviewModel: AuthViewModel
++    
++    var body: some View {
++        
++        if let user = authviewModel.currentUser {
++        VStack(alignment: .leading, spacing: 32) {
++            VStack(alignment: .leading) {
++                KFImage(URL(string: user.profileImageUrl))
++                    .resizable()
++                    .scaledToFill()
++                    .clipShape(Circle())
++                    .frame(width: 48, height: 48)
++                
++                
++                VStack(alignment: .leading, spacing: 4) {
++                    Text(user.fullname)
++                        .font(.headline)
++                    
++                    Text("@\(user.username)")
++                        .font(.caption)
++                        .foregroundColor(.gray)
++                }
++           //     UserStatsView()
++                  //  .padding(.vertical)
++            }
++            .padding(.leading)
++            
++            
++            ForEach(SideMenuViewModel.allCases, id: \.rawValue) {
++                viewModel in
++                
++                if viewModel == .profile {
++                    NavigationLink{
++                        ProfileView(user: user)
++                    }
++                label: {
++                    SideMenuOptionRowView(viewModel: viewModel)
++                }
++                
++                }else if viewModel == .logout {
++                    Button {
++                        authviewModel.signOut()
++                    } label: {
++                        SideMenuOptionRowView(viewModel: viewModel)
++                    }
++                } else {
++                    SideMenuOptionRowView(viewModel: viewModel)
++                }
++            }
++                
++            
++               Spacer()
++        }
++    }
++}
++}
++
++struct SideMenuView_Previews: PreviewProvider {
++    static var previews: some View {
++            ContentView()
++                .environmentObject(AuthViewModel())
++        
++    }
++}
++
++
++
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/AuthViewModel.swift b/College Market V.2/Core/UploadTweet/ViewModel/AuthViewModel.swift
+new file mode 100644
+index 0000000..a27bd63
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/AuthViewModel.swift	
+@@ -0,0 +1,202 @@
++//
++//  AuthViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++
++import SwiftUI
++import Firebase
++import FirebaseAuth
++import FirebaseFirestore
++import FirebaseFirestoreSwift
++
++
++/*
++class AuthViewModel: ObservableObject {
++    @Published var userSession: User?
++    //if user logged in, store their session in this variable.
++    init() {
++        self.userSession = Auth.auth().currentUser
++        
++        print("DEBUG: User session is \(self.userSession)")
++    }
++}
++ */
++class AuthViewModel: ObservableObject {
++    @Published var userSession: FirebaseAuth.User? //Published reconfigures view
++    @Published var didAuthenticateUser = false
++    @Published var currentUser: User?
++    private var tempUserSession: FirebaseAuth.User?
++    private let service = UserService()
++    // If the user is logged in, store their session in this variable.
++    
++    init() {
++        self.userSession = Auth.auth().currentUser
++        
++        self.fetchUser()
++        
++    }
++    
++    func forceClearUserSession() {
++        userSession = nil
++    }
++    
++    
++    func login(withEmail email: String, password: String) {
++        Auth.auth().signIn(withEmail: email, password: password) { result, error in
++            if let error = error {
++                print("Debug: failed to sign in with error \(error.localizedDescription)")
++                return
++            }
++            guard let user = result?.user else {return}
++            self.userSession = user
++            self.fetchUser()
++        }
++    }
++    
++    func register(withEmail email:String, password: String, fullname: String, username: String){
++        Auth.auth().createUser(withEmail: email, password: password) { result, error in
++            if let error = error {
++                print("DEBUG: Failed to register with error \(error.localizedDescription)")
++                return
++            }
++            guard let user = result?.user else {return}
++            self.tempUserSession = user
++            
++            
++            
++            
++            
++            let data = ["email" : email, "username": username.lowercased(), "fullname": fullname, "uid": user.uid]
++            
++            Firestore.firestore().collection("users")
++                .document(user.uid)
++                .setData(data) { _ in
++                    self.didAuthenticateUser = true
++                    
++                }
++            
++        }
++    }
++    
++    func signOut() {
++        //sets user session to nil so we show login view.
++        userSession = nil
++        //signs user out on server side.
++        
++        try? Auth.auth().signOut()
++    }
++    func uploadProfileImage(_ image: UIImage) {
++        guard let uid = tempUserSession?.uid else { return }
++        
++        ImageUploader.uploadImage(image: image) { profileImageUrl in
++            Firestore.firestore().collection("users")
++                .document(uid)
++                .updateData(["profileImageUrl": profileImageUrl]) { _ in
++                    self.userSession = self.tempUserSession
++                    self.fetchUser()
++                    
++                }
++        }
++        
++    }
++    func fetchUser() {
++        guard let uid = self.userSession?.uid else {return }
++        service.fetchUser(withUid: uid) { user in
++            self.currentUser = user
++            
++        }
++    }
++    
++    
++    let messagingService = MessagingService()
++    
++    func sendDirectMessage(recipientID: String, content: String, participants: [String], imageurl: String) {
++        guard let senderID = userSession?.uid else {
++            // Handle not being logged in
++            print("DEBUG: User is not logged in.")
++            return
++        }
++        
++        let message = Message(senderID: senderID, recipientID: recipientID, content: content, timestamp: Date(), participants: participants, imageurl: imageurl)
++        messagingService.sendDirectMessage(message: message)
++    }
++    
++    // Add methods for fetching message history, etc.
++    
++    @Published var messages: [Message] = []
++    // ... (your existing code)
++    
++    func fetchMessageHistory(forRecipient recipientID: String) {
++        guard let currentUserID = userSession?.uid else {
++            print("DEBUG: User is not logged in.")
++            return
++        }
++        
++        Firestore.firestore().collection("messages")
++        // .whereField("senderID", in: [currentUserID, recipientID])
++            .whereField("recipientID", in: [currentUserID, recipientID])
++            .order(by: "timestamp", descending: false)
++            .addSnapshotListener { querySnapshot, error in
++                guard let documents = querySnapshot?.documents else {
++                    print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
++                    return
++                }
++                
++                let fetchedMessages = documents.compactMap { queryDocumentSnapshot -> Message? in
++                    do {
++                        return try queryDocumentSnapshot.data(as: Message.self)
++                    } catch {
++                        print("Error decoding message: \(error.localizedDescription)")
++                        return nil
++                    }
++                }
++                
++                // Update messages on the main thread
++                DispatchQueue.main.async {
++                    self.messages = fetchedMessages
++                }
++            }
++    }
++    
++    /*
++     func fetchMessageHistory(forRecipient recipientID: String) {
++     guard let currentUserID = userSession?.uid else {
++     print("DEBUG: User is not logged in.")
++     return
++     }
++     
++     let chatParticipants = [currentUserID, recipientID].sorted()
++     
++     Firestore.firestore().collection("messages")
++     .whereField("participants", arrayContains: chatParticipants)
++     .order(by: "timestamp", descending: false)
++     .addSnapshotListener { querySnapshot, error in
++     guard let documents = querySnapshot?.documents else {
++     print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
++     return
++     }
++     
++     let fetchedMessages = documents.compactMap { queryDocumentSnapshot -> Message? in
++     do {
++     return try queryDocumentSnapshot.data(as: Message.self)
++     } catch {
++     print("Error decoding message: \(error.localizedDescription)")
++     return nil
++     }
++     }
++     
++     // Update messages on the main thread
++     DispatchQueue.main.async {
++     self.messages = fetchedMessages
++     }
++     }
++     }
++     }
++     
++     */
++    
++}
++
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/ChatFunction.swift b/College Market V.2/Core/UploadTweet/ViewModel/ChatFunction.swift
+new file mode 100644
+index 0000000..74f16ac
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/ChatFunction.swift	
+@@ -0,0 +1,8 @@
++//
++//  ChatFunction.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/10/24.
++//
++
++
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/ChatPage.swift b/College Market V.2/Core/UploadTweet/ViewModel/ChatPage.swift
+new file mode 100644
+index 0000000..963ac0d
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/ChatPage.swift	
+@@ -0,0 +1,39 @@
++//
++//  SwiftUIView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/10/24.
++//
++
++import SwiftUI
++struct ChatPage: View {
++    var items: [String]
++    @Environment(\.presentationMode) var PresentationMode
++    var body: some View {
++        NavigationView{
++            
++                VStack {
++                    Button {
++                        PresentationMode.wrappedValue.dismiss()
++                    } label: {
++                        Text("Back")
++                    }
++
++                    List(items, id: \.self) { item in
++                        Text(item)
++                    }
++                }
++            
++        }
++        .navigationBarBackButtonHidden(true)
++    }
++    
++}
++  
++
++struct ChatPage_Previews: PreviewProvider {
++    static var previews: some View {
++        var items = ["Pickles", "Cheese"]
++        ChatPage(items: items)
++    }
++}
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/ChatView.swift b/College Market V.2/Core/UploadTweet/ViewModel/ChatView.swift
+new file mode 100644
+index 0000000..a8e4d01
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/ChatView.swift	
+@@ -0,0 +1,380 @@
++//
++//  ChatView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/7/24.
++//
++/*
++import SwiftUI
++
++struct ChatView: View {
++    @ObservedObject var viewModel: AuthViewModel
++    @State private var messageText = ""
++    @State private var idlist: [String] = []
++    @State var mydict = [String: Any]()
++   
++    
++    
++    var body: some View {
++        
++        NavigationView {
++            VStack {
++                if !mydict.isEmpty {
++                    ForEach(mydict.keys.sorted(), id: \.self) { key in
++                        NavigationLink(
++                            destination: ChatPage(items: mydict[key] as! [String]),
++                            label: {
++                                Text(key)
++                            }
++                                
++                        )
++                        .navigationBarBackButtonHidden(true)
++                        
++                        /*
++                         if !mydict.isEmpty {
++                         ForEach(mydict.keys.sorted(), id: \.self) { key in
++                         VStack(alignment: .leading) {
++                         Text("Key: \(key)")
++                         .font(.headline)
++                         if let messages = mydict[key] as? [String] {
++                         ForEach(messages, id: \.self) { mess in
++                         Text("Message: \(mess)")
++                         */
++                    }
++                    
++                    
++                    
++                    
++                    
++                    
++                    
++                    TextField("Type your message...", text: $messageText)
++                        .padding()
++                        .textFieldStyle(RoundedBorderTextFieldStyle())
++                    
++                    Button("Send") {
++                        guard (viewModel.userSession?.uid) != nil else {
++                            print("DEBUG: User is not logged in.")
++                            return
++                        }
++                        viewModel.sendDirectMessage(recipientID: "W2Ank7L90yOMONbxEN6RQxN6xbE2", content: messageText)
++                        messageText = ""
++                    }
++                }
++            }
++                    .navigationTitle("Chat")
++                    .onAppear {
++                        if !didfetc=
++                        updateMyDict()
++                        viewModel.fetchMessageHistory(forRecipient: "W2Ank7L90yOMONbxEN6RQxN6xbE2")
++                    }
++            }
++        }
++    
++    
++    
++    
++    public func updateMyDict() {
++        for message in viewModel.messages {
++            if var existingArray = mydict[message.senderID] as? [String] {
++                existingArray.append(message.content)
++                mydict[message.senderID] = existingArray
++            } else {
++                mydict[message.senderID] = [message.content]
++            }
++            
++        }
++    }
++}
++*/
++
++
++/*
++import SwiftUI
++import Combine
++
++struct ChatView: View {
++    @ObservedObject var viewModel: AuthViewModel
++    @State private var messageText = ""
++    @State private var idlist: [String] = []
++    @State private var mydict = [String: Any]()
++    @State private var cancellables: Set<AnyCancellable> = []
++    @State var recipient = ""
++    
++    
++    var body: some View {
++        NavigationView {
++            VStack {
++                
++                 if !mydict.isEmpty {
++                 ForEach(mydict.keys.sorted(), id: \.self) { key in
++                 NavigationLink(
++                 destination: ChatPage(items: mydict[key] as! [String]),
++                 label: {
++                 Text(key)
++                 }
++                 )
++                 .navigationBarBackButtonHidden(true)
++                 }
++                 }
++                 
++                
++                
++            }
++                TextField("Type your message...", text: $messageText)
++                    .padding()
++                    .textFieldStyle(RoundedBorderTextFieldStyle())
++                
++                Button("Send") {
++                    guard (viewModel.userSession?.uid) != nil else {
++                        print("DEBUG: User is not logged in.")
++                        return
++                    }
++                    viewModel.sendDirectMessage(recipientID: recipient, content: messageText, participants: ["F3XQLEnuUNdoJOFxo3G5B9uFW1Y2", "W2Ank7L90yOMONbxEN6RQxN6xbE2"])
++                    messageText = ""
++                }
++                
++            }
++            .navigationTitle("Chat")
++            .onAppear {
++                updateMyDict()
++                viewModel.fetchMessageHistory(forRecipient: recipient)
++                
++                // Set up live updates using Combine
++                viewModel.$messages
++                    .sink(receiveValue: { _ in
++                        updateMyDict()
++                    })
++                    .store(in: &cancellables)
++            }
++        }
++    }
++    
++    
++    public func updateMyDict() {
++        for message in viewModel.messages {
++            if var existingArray = mydict[message.senderID] as? [String] {
++                if !existingArray.contains(message.content) {
++                    existingArray.append(message.content)
++                    mydict[message.senderID] = existingArray
++                }
++            } else {
++                mydict[message.senderID] = [message.content]
++            }
++        }
++    }
++    
++
++    /*
++     public func updateMyDict() {
++     guard let currentUserID = viewModel.userSession?.uid else {
++     // If the current user is not logged in, exit the function
++     return
++     }
++     
++     for message in viewModel.messages {
++     // Check if the current user is part of the participants list
++     if message.participants.contains(currentUserID) == true  {
++     // Use the participants list as the key
++     let key = message.participants.joined(separator: "-")
++     
++     // Update messages only for the current user
++     if var existingArray = mydict[key] as? [String] {
++     if !existingArray.contains(message.content) {
++     existingArray.append(message.content)
++     mydict[key] = existingArray
++     }
++     } else {
++     mydict[key] = [message.content]
++     }
++     }
++     }
++     
++     }
++     }
++     */
++}
++*/
++
++import SwiftUI
++import Combine
++
++import Kingfisher
++struct ChatView: View {
++    @ObservedObject var viewModel: AuthViewModel
++    @State private var messageText = ""
++    @State private var cancellables: Set<AnyCancellable> = []
++    @State var recipient = ""
++    @Binding var messagepic: String
++    @Binding var seller: String
++    @Environment(\.presentationMode) var PresentationMode
++    
++    var body: some View {
++       // ScrollView{
++            NavigationView {
++                
++                
++                
++                VStack {
++                    
++                    
++                    // KFImage(URL(string: messagepic))
++                    //    .resizable()
++                    //    .scaledToFill()
++                    //    .clipShape(Circle())
++                    //    .frame(width: 48, height: 48)
++                    //    .offset(x:50)
++                    HStack {
++                        Button {
++                            PresentationMode.wrappedValue.dismiss()
++                        } label: {
++                            Image(systemName: "chevron.left")
++                                .font(.title2)
++                        }
++                        .offset(x: -100, y: 10)
++                        
++
++                        //Image(systemName: "house")
++                        KFImage(URL(string: messagepic))
++                            .resizable()
++                            .scaledToFill()
++                            .clipShape(Circle())
++                            .frame(width: 30, height: 30)
++                            .offset(x:-80, y: 10)
++                        
++                        Text(seller)
++                            .bold()
++                            .offset(x: -70, y: 10)
++                            .font(.title2)
++                        
++                        
++                        
++                    }
++                    .padding()
++                    Spacer()
++                    Divider()
++                        //.offset(y: 10)
++                        
++                        
++                        
++                       
++                        
++                        
++                
++                    
++                    
++                    
++                        List(viewModel.messages.filter { message in
++                            message.participants.contains(viewModel.currentUser?.id ?? "") &&
++                            message.participants.contains(recipient)
++                        }) { message in
++                            ChatBubble(message: message, viewModel: viewModel)
++                                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
++                                .listRowSeparatorTint(.clear)
++                        }
++                        .listStyle(InsetListStyle())
++                        
++                    
++                    HStack {
++                        TextField("Type your message...", text: $messageText)
++                            .padding()
++                            .background(
++                                    RoundedRectangle(cornerRadius: 15, style: .continuous)
++                                        .strokeBorder(Color.black, lineWidth: 1)
++                                        .frame(height: 30)
++                                )
++                           // .textFieldStyle(RoundedBorderTextFieldStyle())
++                            
++                            
++                        
++                        Button("Send") {
++                            guard (viewModel.userSession?.uid) != nil else {
++                                print("DEBUG: User is not logged in.")
++                                return
++                            }
++                            viewModel.sendDirectMessage(recipientID: recipient, content: messageText, participants: [viewModel.userSession?.uid ?? "", recipient], imageurl: viewModel.currentUser?.profileImageUrl ?? "")
++                            
++                            messageText = ""
++                        }
++                    }
++                    .padding()
++                }
++                
++                
++                
++                .onAppear {
++                    viewModel.fetchMessageHistory(forRecipient: recipient)
++                    
++                    // Set up live updates using Combine
++                    viewModel.$messages
++                        .sink(receiveValue: { _ in })
++                        .store(in: &cancellables)
++                }
++                
++                
++                
++            }
++            .navigationBarHidden(true)
++            
++            
++            
++            
++      //  }
++    }
++}
++
++struct ChatBubble: View {
++    var message: Message
++    @ObservedObject var viewModel: AuthViewModel
++    var body: some View {
++        
++        HStack {
++            if message.senderID == viewModel.currentUser?.id {
++            Spacer()
++            }
++         //   .trailing . leading
++            VStack(alignment: message.senderID == viewModel.currentUser?.id ? .trailing: .leading) {
++                HStack {
++                   // Text(message.senderID)
++                    
++                        //.font(.caption)
++                   
++                    /*
++                        .resizable()
++                        .scaledToFill()
++                        .clipShape(Circle())
++                        .frame(width: 48, height: 48)
++                   */
++                    if (message.senderID == viewModel.currentUser?.id) {
++                        Text(message.content)
++                            .padding(10)
++                            .background(Color.blue)
++                            .foregroundColor(.white)
++                            .cornerRadius(20)
++                    }
++                    else {
++                        Text(message.content)
++                            .padding(10)
++                            .background(Color.gray)
++                            .foregroundColor(.white)
++                            .cornerRadius(20)
++                    }
++                }
++            }
++            
++            if message.senderID != viewModel.currentUser?.id {
++                Spacer()
++            }
++        }
++        .padding(.horizontal)
++    }
++}
++struct ChatView_Previews: PreviewProvider {
++    static var previews: some View {
++        let viewModel = AuthViewModel() // Make sure to initialize your view model accordingly
++        let placeholderImageURL = "https://example.com/placeholder.jpg" // Provide a placeholder image URL for testing
++        
++        return ChatView(viewModel: viewModel, messagepic: Binding.constant(placeholderImageURL), seller: Binding.constant("Adame"))
++            .environmentObject(viewModel)
++    }
++}
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/MessageViewModel.swift b/College Market V.2/Core/UploadTweet/ViewModel/MessageViewModel.swift
+new file mode 100644
+index 0000000..fd4970e
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/MessageViewModel.swift	
+@@ -0,0 +1,6 @@
++//
++//  MessageViewModel.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/10/24.
++//
+diff --git a/College Market V.2/Core/UploadTweet/ViewModel/UploadTweet.swift b/College Market V.2/Core/UploadTweet/ViewModel/UploadTweet.swift
+new file mode 100644
+index 0000000..b8403d6
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/ViewModel/UploadTweet.swift	
+@@ -0,0 +1,103 @@
++//
++//  UploadTweet.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++import Foundation
++import SwiftUI
++import Firebase
++import FirebaseAuth
++import FirebaseFirestore
++
++/*
++class UploadTweetViewModel: ObservableObject {
++    @Published var didUploadTweet = false
++    let service = TweetService()
++    //added images: [UIImage]
++    func uploadTweet(withCaption caption: String) {
++        service.uploadTweet(caption: caption) { success in
++            if success {
++                self.didUploadTweet = true
++            } else {
++                //show error message to user
++            }
++        }
++    }
++    
++*/
++ /*
++     func uploadTweet(caption: String, completion: @escaping (Bool) -> Void) {
++     guard let uid = Auth.auth().currentUser?.uid else {
++     completion(false)
++     return
++     }
++     
++     let data: [String: Any] = [
++     "uid": uid,
++     "caption": caption,
++     "likes": 0,
++     "timestamp": Timestamp(date: Date()),
++     ]
++     
++     Firestore.firestore().collection("tweets")
++     .document().setData(data) { error in
++     if let error = error {
++     print("DEBUG: failed to upload tweet with error: \(error.localizedDescription)")
++     completion(false)
++     return
++     }
++     
++     completion(true)
++     }
++     }
++     
++     }
++     
++    */
++class UploadTweetViewModel: ObservableObject {
++    @Published var didUploadTweet = false
++    let service = TweetService()
++    //added likes
++    func uploadTweet(withCaption caption: String, images: [UIImage], likes: String, description: String, condition: String) {
++        guard !images.isEmpty else {
++               // No images to upload, proceed with uploading the tweet without images
++            self.service.uploadTweet(caption: caption, imageUrls: [], likes: likes, description: description, condition: condition) { success in
++                   if success {
++                       self.didUploadTweet = true
++                   } else {
++                       // Handle error
++                       self.didUploadTweet = false
++                   }
++               }
++               return
++           }
++        
++        
++        
++        var uploadedImageUrls: [String] = []
++        var uploadedImageCount = 0
++        
++        // Upload each image and collect their URLs
++        for image in images {
++            print(image)
++            ImageUploader.uploadImage(image: image) { imageUrl in
++                uploadedImageCount += 1
++                uploadedImageUrls.append(imageUrl)
++                
++                // Check if all images are uploaded
++                if uploadedImageCount == images.count {
++                    // All images uploaded, now upload the tweet with image URLs
++                    self.service.uploadTweet(caption: caption, imageUrls: uploadedImageUrls, likes: likes, description: description, condition: condition) { success in
++                        if success {
++                            self.didUploadTweet = true
++                        } else {
++                            // Handle error
++                            self.didUploadTweet = false
++                        }
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/College Market V.2/Core/UploadTweet/Views/NewTweetView.swift b/College Market V.2/Core/UploadTweet/Views/NewTweetView.swift
+new file mode 100644
+index 0000000..849a03b
+--- /dev/null
++++ b/College Market V.2/Core/UploadTweet/Views/NewTweetView.swift	
+@@ -0,0 +1,376 @@
++//
++//  NewTweetView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/25/23.
++//
++
++import SwiftUI
++import Kingfisher
++
++struct NewTweetView: View {
++    
++    @State private var likes = ""
++    @State private var caption = ""
++    @State private var images: [UIImage] = []
++    @State private var description = ""
++    @State private var condition = ""
++    @State private var isPressed: Bool = false
++    @Environment(\.presentationMode) var PresentationMode
++    @EnvironmentObject var authViewModel: AuthViewModel
++    @ObservedObject var viewModel = UploadTweetViewModel()
++    
++    //knows we have view open, will dismiss it.
++    
++    var body: some View {
++        NavigationView{
++            ScrollView{
++                
++                VStack{
++                    
++                    
++                    
++                    HStack{
++                        Button {
++                            PresentationMode.wrappedValue.dismiss()
++                            
++                        }
++                    label: {
++                        Text("Cancel")
++                            .foregroundColor(Color(.systemBlue))
++                            .offset(x: 30)
++                    }
++                        Spacer()
++                        
++                        Button {
++                            //normally, withCaption. // added likes
++                            viewModel.uploadTweet(withCaption: caption, images: images, likes: likes, description: description, condition: condition)
++                            
++                            
++                        //    *****userSession == nil
++                        } label: {
++                            Text("Post")
++                                .padding(.horizontal)
++                                .padding(.vertical, 8)
++                                .background(Color(.systemBlue))
++                                .foregroundColor(.white)
++                                .clipShape(Capsule())
++                                .offset(x: -25)
++                            
++                        }
++                    }
++                    
++                    .padding()
++                    .offset(y: -30)
++                    /*
++                     HStack(alignment: .top) {
++                     if let user = authViewModel.currentUser {
++                     KFImage(URL(string: user.profileImageUrl))
++                     .resizable()
++                     .clipShape(Circle())
++                     .frame(width: 64, height: 64)
++                     }
++                     */
++                    
++                    
++                    Text("Add Photos")
++                        .frame(alignment: .leading)
++                        .offset(x: -130, y: -30)
++                        .font(.title3)
++                        .padding()
++                    
++                    
++                   PostStructureView(selectedImages: $images)
++                       .offset(y: -60)
++                    
++                    
++                        
++                    //----------------------------------------------------------------------------
++                    //$caption
++                    TextField("Title:", text: $caption,  axis: .vertical)
++                    
++                        .frame(width: 335, height: 40)
++                        .padding()
++                    
++                        .lineLimit(1...3)
++                        .overlay(
++                            RoundedRectangle(cornerRadius: 8)
++                                .stroke(Color.gray, lineWidth: 1)
++                        )
++                        .offset(y: -80)
++                    
++                    
++                    
++                    TextField("Price:", text: $likes,  axis: .vertical)
++                    
++                        .frame(width: 335, height: 40)
++                        .padding()
++                    
++                        .lineLimit(1...3)
++                        .overlay(
++                            RoundedRectangle(cornerRadius: 8)
++                                .stroke(Color.gray, lineWidth: 1)
++                        )
++                        .offset(y: -70)
++                    
++                    Text("Condition")
++                        .font(.title3)
++                        .bold()
++                        .offset(x: -140, y: -50)
++                    
++                    ScrollView(.horizontal) {
++                        HStack {
++                            Button {
++                                condition = "New"
++                                if isPressed == false {
++                                     isPressed = true
++                                }
++                                else {
++                                    isPressed = false
++                                }
++                            } label: {
++                                Text("New")
++                                    .foregroundColor(.white)
++                                    .padding()
++                                    .background(isPressed && condition == "New" ? Color(.gray) : Color(.systemBlue))
++                                    .clipShape(Rectangle())
++                                    .cornerRadius(15)
++                                    .fixedSize()
++                                    .padding(.horizontal, 3)
++                            }
++                            Button {
++                                condition = "Used - Like New"
++                                if isPressed == false {
++                                     isPressed = true
++                                }
++                                else {
++                                    isPressed = false
++                                }
++                            } label: {
++                                Text("Used - Like New")
++                                    .foregroundColor(.white)
++                                    .padding()
++                                    .background(isPressed && condition == "Used - Like New" ? Color(.gray) : Color(.systemBlue))
++                                    .clipShape(Rectangle())
++                                    .cornerRadius(15)
++                                    .fixedSize()
++                                    .padding(.horizontal, -5)
++                                
++                            }
++                            
++                            
++                            Button {
++                                condition = "Used - Good"
++                                if isPressed == false {
++                                     isPressed = true
++                                }
++                                else {
++                                    isPressed = false
++                                }
++                            } label: {
++                                Text("Used - Good")
++                                    .foregroundColor(.white)
++                                    .padding()
++                                    .background(isPressed && condition == "Used - Good" ? Color(.gray) : Color(.systemBlue))
++                                    .clipShape(Rectangle())
++                                    .cornerRadius(15)
++                                    .fixedSize()
++                                    .padding(.horizontal, 3)
++                                
++                                
++                            }
++                            
++                            Button {
++                                condition = "Used - Fair"
++                                if isPressed == false {
++                                     isPressed = true
++                                }
++                                else {
++                                    isPressed = false
++                                }
++                            } label: {
++                                Text("Used - Fair")
++                                    .foregroundColor(.white)
++                                    .padding()
++                                    .background(isPressed && condition == "Used - Fair" ? Color(.gray) : Color(.systemBlue))
++                                    .clipShape(Rectangle())
++                                    .cornerRadius(15)
++                                    .fixedSize()
++                                    .padding(.horizontal, -4)
++                                
++                                
++                            }
++                            
++                            
++                        }
++
++                    }
++                    
++                        .offset(x: 20, y: -45)
++                    VStack {
++                        TextField("Description (Recommended)", text: $description,  axis: .vertical)
++                        
++                            .frame(width: 335, height: 40)
++                            .padding()
++                        
++                            .lineLimit(1...3)
++                            .overlay(
++                                RoundedRectangle(cornerRadius: 8)
++                                    .stroke(Color.gray, lineWidth: 1)
++                            )
++                            .offset(y: -30)
++                        
++                        
++                        //.offset(x: 100)
++                        
++                        Button {
++                            
++                            viewModel.uploadTweet(withCaption: caption, images: images, likes: likes, description: description, condition: condition)
++                        } label: {
++                            Text("Publish") // Text on the button
++                                .font(.title3)
++                                .frame(width: 335, height: 18)
++                                           .foregroundColor(.white) // Text color
++                                           .padding() // Padding around the text
++                                           .background(Color.blue) // Background color of the button
++                                           .cornerRadius(10)
++                        }
++                        .offset(y: -30)
++                        .padding()
++
++                        
++                    }
++                        
++                        
++                        
++                        
++                        
++                        // TextArea("What's happening?", text: $caption)
++                        
++                        
++                        
++                        
++                        
++                    Text(authViewModel.currentUser?.fullname ?? "")
++                    Text(authViewModel.currentUser?.id ?? "")
++                        
++                        
++                        //    PostStructureView(selectedImages: $images)
++                    }
++                    .navigationBarTitle("Sell", displayMode: .inline)
++                    .bold()
++                    .padding()
++                    .offset(y: -20)
++                    
++                    
++                }
++                
++                .onReceive(viewModel.$didUploadTweet) { success in
++                    if success {
++                        PresentationMode.wrappedValue.dismiss()
++                    }
++                    
++                }
++                
++            }
++        }
++    
++    
++}
++        
++
++   
++struct NewTweetView_Previews: PreviewProvider {
++    static var previews: some View {
++        
++        NewTweetView()
++            .environmentObject(AuthViewModel())
++    }
++}
++
++
++/*
++/*
++ HStack(alignment: .top) {
++ if let user = authViewModel.currentUser {
++ KFImage(URL(string: user.profileImageUrl))
++ .resizable()
++ .clipShape(Circle())
++ .frame(width: 64, height: 64)
++ }
++ */
++
++VStack{
++    
++    HStack(spacing: 35) {
++        Group {
++            ZStack {
++                Circle()
++                    .frame(width: 20, height: 20)
++                    .foregroundColor(.white)
++                    .overlay(
++                        Circle()
++                            .stroke(Color.green, lineWidth: 1)
++                            .frame(width: 30, height: 30)
++                        
++                    )
++                Text("1")
++                    .foregroundColor(.black)
++                
++            }
++            
++            Text("Upload Pictures")
++                .bold()
++                .padding()
++                .offset(x: -37)
++        }
++        .offset(x: -30)
++        
++        Group {
++            Circle()
++                .frame(width: 30, height: 30)
++                .foregroundColor(.white)
++                .overlay(
++                    Circle()
++                        .stroke(Color.black, lineWidth: 1)
++                        .frame(width: 30, height: 30)
++                    
++                )
++        }
++      //  .offset(x: 25)
++    }
++    
++  //  .offset(x: -37)
++    
++        //PostStructureView(selectedImages: $images)
++          //  .padding()
++    
++    /*
++    Button {
++        
++    } label: {
++        ZStack {
++            
++            Rectangle()
++                .cornerRadius(25)
++                .frame(width: 310, height: 250)
++                .foregroundColor(.white)
++                .overlay(
++                    RoundedRectangle(cornerRadius: 25)
++                        .stroke(Color.green, lineWidth: 2)
++                )
++                .padding()
++            
++            
++            Image(systemName: "plus")
++                .foregroundColor(Color(.black))
++              //  .bold()
++                .padding()
++                .font(.title)
++            
++            
++        }
++        // .padding()
++    }
++*/
++*/
+diff --git a/College Market V.2/Core/Users/UserRowView.swift b/College Market V.2/Core/Users/UserRowView.swift
+new file mode 100644
+index 0000000..caa9c35
+--- /dev/null
++++ b/College Market V.2/Core/Users/UserRowView.swift	
+@@ -0,0 +1,37 @@
++//
++//  UserRowView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++
++import SwiftUI
++import Kingfisher
++
++struct UserRowView: View {
++    let user: User
++    var body: some View {
++        HStack(spacing: 12) {
++            KFImage(URL(string: user.profileImageUrl))
++                .resizable()
++                .scaledToFit()
++                .clipShape(Circle())
++                .frame(width: 48, height: 48)
++                
++            VStack(alignment: .leading, spacing: 4)
++            {
++                Text(user.username)
++                    .font(.subheadline).bold()
++                    .foregroundColor(.black)
++                
++                Text(user.fullname)
++                    .font(.subheadline)
++                    .foregroundColor(.gray)
++            }
++            Spacer()
++        }
++        .padding(.horizontal)
++        .padding(.vertical, 4)
++    }
++}
++
+diff --git a/College Market V.2/Core/Users/UserStatsView.swift b/College Market V.2/Core/Users/UserStatsView.swift
+new file mode 100644
+index 0000000..fa66c43
+--- /dev/null
++++ b/College Market V.2/Core/Users/UserStatsView.swift	
+@@ -0,0 +1,44 @@
++//
++//  UserStatsView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/24/23.
++//
++/*
++import SwiftUI
++
++struct UserStatsView: View {
++    var body: some View {
++        
++        HStack(spacing: 24) {
++            HStack(spacing: 4) {
++                Text("807")
++                    .font(.subheadline)
++                    .bold()
++                
++                Text("Following")
++                    .font(.caption)
++                    .foregroundColor(.gray)
++            }
++            
++            HStack(spacing: 4) {
++                Text("6.9M")
++                    .font(.subheadline)
++                    .bold()
++                
++                Text("Followers")
++                    .font(.caption)
++                    .foregroundColor((.gray))
++            }
++            
++        }
++    }
++}
++       
++
++struct UserStatsView_Previews: PreviewProvider {
++    static var previews: some View {
++        UserStatsView()
++    }
++}
++*/
+diff --git a/College Market V.2/Model/Message.swift b/College Market V.2/Model/Message.swift
+new file mode 100644
+index 0000000..5cfca52
+--- /dev/null
++++ b/College Market V.2/Model/Message.swift	
+@@ -0,0 +1,40 @@
++//
++//  Message.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/7/24.
++//
++
++import FirebaseFirestoreSwift
++import Firebase
++import SwiftUI
++
++/*
++struct Message: Hashable, Decodable {
++    var senderID: String
++    var recipientID: String
++    var content: String
++    var timestamp: Date
++    var participants: [String]
++}
++*/
++struct Message: Decodable, Identifiable {
++    var id: String // Unique identifier
++    var senderID: String
++    var recipientID: String
++    var content: String
++    var timestamp: Date
++    var participants: [String]
++    var imageurl: String
++
++    init(senderID: String, recipientID: String, content: String, timestamp: Date, participants: [String], imageurl: String) {
++        // Create a unique identifier using a combination of sender ID, recipient ID, and timestamp
++        self.id = "\(senderID)_\(recipientID)_\(timestamp.timeIntervalSince1970)"
++        self.senderID = senderID
++        self.recipientID = recipientID
++        self.content = content
++        self.timestamp = timestamp
++        self.participants = participants
++        self.imageurl = imageurl
++    }
++}
+diff --git a/College Market V.2/Model/Tweet.swift b/College Market V.2/Model/Tweet.swift
+new file mode 100644
+index 0000000..7349194
+--- /dev/null
++++ b/College Market V.2/Model/Tweet.swift	
+@@ -0,0 +1,30 @@
++//
++//  Tweet.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/28/23.
++//
++
++import FirebaseFirestoreSwift
++import Firebase
++import SwiftUI
++
++struct Tweet: Identifiable, Decodable {
++    @DocumentID var id: String?
++    
++    let caption: String
++    let timestamp: Timestamp
++    let uid: String
++    //from Int to Double
++    var likes: String
++    var user: User?
++    var description: String
++    //new
++    var imageUrls: [String]?
++    var condition: String
++    
++    
++    
++    
++    
++}
+diff --git a/College Market V.2/Model/User.swift b/College Market V.2/Model/User.swift
+new file mode 100644
+index 0000000..7d2d014
+--- /dev/null
++++ b/College Market V.2/Model/User.swift	
+@@ -0,0 +1,17 @@
++//
++//  User.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++
++import FirebaseFirestoreSwift
++
++struct User: Identifiable, Decodable {
++    @DocumentID var id: String?
++    let username: String
++    let fullname: String
++    let profileImageUrl: String
++    let email: String
++   
++}
+diff --git a/College Market V.2/Service/ImageUploader.swift b/College Market V.2/Service/ImageUploader.swift
+new file mode 100644
+index 0000000..d61fd2b
+--- /dev/null
++++ b/College Market V.2/Service/ImageUploader.swift	
+@@ -0,0 +1,34 @@
++//
++//  ImageUploader.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/26/23.
++//
++import FirebaseAuth
++import FirebaseStorage
++import Firebase
++import UIKit
++import SwiftUI
++
++
++struct ImageUploader {
++    
++    static func uploadImage(image: UIImage, completion: @escaping(String) -> Void){
++        guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
++        
++        let filename = NSUUID().uuidString
++        let ref = Storage.storage().reference(withPath: "/profile_image/\(filename)")
++        
++        ref.putData(imageData, metadata: nil) { _, error in
++            if let error = error {
++                print("DEBUG: Failed to upload image with error: \(error.localizedDescription)")
++                return
++            }
++            
++            ref.downloadURL { imageUrl, _ in
++                guard let imageUrl = imageUrl?.absoluteString else { return }
++                completion(imageUrl)
++            }
++        }
++    }
++}
+diff --git a/College Market V.2/Service/MessagingService.swift b/College Market V.2/Service/MessagingService.swift
+new file mode 100644
+index 0000000..40f6426
+--- /dev/null
++++ b/College Market V.2/Service/MessagingService.swift	
+@@ -0,0 +1,33 @@
++//
++//  MessageService.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/7/24.
++//
++
++import Foundation
++import FirebaseFirestore
++import FirebaseAuth
++
++class MessagingService {
++    let db = Firestore.firestore()
++    func sendDirectMessage(message: Message) {
++        
++        db.collection("messages")
++            .addDocument(data: [
++                "id": message.id,
++                "senderID": message.senderID,
++                "recipientID": message.recipientID,
++                "content": message.content,
++                "timestamp": Timestamp(date: message.timestamp), "participants": message.participants, "imageurl": message.imageurl
++            ]) { error in
++                if let error = error {
++                    print("DEBUG: Failed to send message with error \(error.localizedDescription)")
++                } else {
++                    print("DEBUG: Message sent successfully.")
++                }
++            }
++    }
++
++    // Add more methods for fetching message history, etc.
++}
+diff --git a/College Market V.2/Service/TweetService.swift b/College Market V.2/Service/TweetService.swift
+new file mode 100644
+index 0000000..a9e3f8e
+--- /dev/null
++++ b/College Market V.2/Service/TweetService.swift	
+@@ -0,0 +1,85 @@
++//
++//  TweetService.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++
++import Firebase
++
++struct TweetService {
++    
++    //added imageUrls
++    /*
++    func uploadTweet(caption: String, imageUrls: [String]?, completion: @escaping(Bool) -> Void) {
++        guard let uid = Auth.auth().currentUser?.uid else {return }
++        
++        //im chaning this let to a var for imageupload
++        var data = ["uid": uid, "caption" : caption, "likes": 0, "timestamp": Timestamp(date: Date())] as [String : Any]
++        
++        //new
++        if let imageUrls = imageUrls {
++                   data["imageUrls"] = imageUrls
++               }
++       
++        //change from .document to adddocument
++        Firestore.firestore().collection("tweets")
++            .document().setData(data) { error in
++                if let error = error {
++                    print("DEBUG: failed to upload tweet with error: \(error.localizedDescription)")
++                    //added tweet
++                    completion(false)
++                    return
++                }
++                
++                completion(true)
++                
++            }
++    }
++    
++    */
++    //added likes
++    func uploadTweet(caption: String, imageUrls: [String]?, likes: String, description: String, condition: String, completion: @escaping(Bool) -> Void) {
++           guard let uid = Auth.auth().currentUser?.uid else { return }
++           
++        var data = ["uid": uid, "caption": caption, "likes": likes, "description": description, "condition": condition, "timestamp": Timestamp(date: Date())] as [String: Any]
++           
++           if let imageUrls = imageUrls {
++               data["imageUrls"] = imageUrls
++           }
++           
++           Firestore.firestore().collection("tweets").addDocument(data: data) { error in
++               if let error = error {
++                   print("DEBUG: failed to upload tweet with error: \(error.localizedDescription)")
++                   completion(false)
++               } else {
++                   completion(true)
++               }
++           }
++       }
++    
++    
++    func fetchTweets(completion: @escaping([Tweet]) -> Void) {
++        Firestore.firestore().collection("tweets")
++            .order(by: "timestamp", descending: true)
++            .getDocuments { snapshot, _ in
++                guard let documents = snapshot?.documents else { return }
++                let tweets = documents.compactMap({ try? $0.data(as: Tweet.self) } )
++                completion(tweets)
++            }
++        
++    }
++    
++    
++    func fetchTweets(forUid uid: String, completion: @escaping([Tweet]) -> Void) {
++        Firestore.firestore().collection("tweets")
++            .whereField("uid", isEqualTo: uid)
++            .getDocuments { snapshot, _ in
++                guard let documents = snapshot?.documents else { return }
++                let tweets = documents.compactMap({ try? $0.data(as: Tweet.self) } )
++                completion(tweets.sorted(by: {$0.timestamp.dateValue() > $1.timestamp.dateValue() }))
++                
++            }
++    }
++}
++
+diff --git a/College Market V.2/Service/UserService.swift b/College Market V.2/Service/UserService.swift
+new file mode 100644
+index 0000000..1e6ac6a
+--- /dev/null
++++ b/College Market V.2/Service/UserService.swift	
+@@ -0,0 +1,34 @@
++//
++//  UserService.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/27/23.
++//
++
++import Firebase
++import FirebaseFirestoreSwift
++
++
++struct UserService {
++    //getting information form api about the user we are logged in as.
++    func fetchUser(withUid uid: String, completion: @escaping(User) -> Void){
++        Firestore.firestore().collection("users")
++            .document(uid)
++            .getDocument { snapshot, _ in
++                guard let snapshot = snapshot else { return }
++                guard let user = try? snapshot.data(as: User.self) else {return}
++                completion(user)
++                
++            }
++    }
++    
++    func fetchUsers(completion: @escaping([User]) -> Void) {
++        Firestore.firestore().collection("users")
++            .getDocuments { snapshot, _ in
++                guard let documents = snapshot?.documents else { return }
++                
++                let users = documents.compactMap({ try?$0.data(as: User.self) })
++                completion(users)
++            }
++    }
++}
+diff --git a/College Market V.2/Utils/AfterclickingonpostView.swift b/College Market V.2/Utils/AfterclickingonpostView.swift
+new file mode 100644
+index 0000000..69ea257
+--- /dev/null
++++ b/College Market V.2/Utils/AfterclickingonpostView.swift	
+@@ -0,0 +1,131 @@
++//
++//  ViewTweetsGoInPreview.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/4/24.
++//
++
++import SwiftUI
++import Kingfisher
++//ViewTweetsGoInPreview = AfterclickingonpostView
++struct AfterclickingonpostView: View {
++    let tweet: Tweet
++    //BIND THE MESSAGEPIC VARIABLE
++    @EnvironmentObject var authViewModel: AuthViewModel
++    @Environment(\.presentationMode) var PresentationMode
++    @State private var refreshID = UUID()
++    @State var messagepic: String = ""
++    @State var seller: String = ""
++    var body: some View {
++        NavigationView{
++           
++            ScrollView {
++                VStack() {
++                   
++                    Button {
++                        PresentationMode.wrappedValue.dismiss()
++                    }
++                label: {
++                    
++                    Image(systemName: "chevron.left")
++                        .foregroundColor(Color(.systemBlue))
++                }
++                .offset(x: -170, y: 40)
++                    ZStack() {
++                        
++                        VStack(alignment: .leading) {
++                            ScrollView(.horizontal) {
++                                TabView {
++                                    ForEach(tweet.imageUrls ?? [], id: \.self) { imageUrl in
++                                        ImageView(url: imageUrl)
++                                            .scaledToFill()
++                                            .frame(width: UIScreen.main.bounds.width, height: 330)
++                                    }
++                                }
++                                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
++                                .frame(width: UIScreen.main.bounds.width, height: 330)
++                            }
++                        }
++                        .offset(y: 60)
++                        
++                    }
++                    HStack {
++                        Text("Nike T-Shirt")
++                            .offset(x: -115, y: 70)
++                        
++                        
++                        Text("$50")
++                            .offset(x: 110, y: 70)
++                    }
++                    
++                    Button {
++                        
++                    } label: {
++                        Image(systemName: "bookmark")
++                    }
++                    .offset(x: -170, y: 86)
++                    
++                    NavigationLink {
++                        ChatView(viewModel: AuthViewModel(), recipient: tweet.uid, messagepic: $messagepic, seller: $seller)
++                        
++                    } label: {
++                        Image(systemName: "message")
++                    }
++                    .offset(x:-130, y:65)
++                    
++                    Divider()
++                        .background(Color.gray)
++                        .frame(width: 365, height: 1)
++                        .offset(x: 0, y: 75)
++                    
++                    Group {
++                        Text("Description: ")
++                            .offset(x: -130, y: 90)
++                            .bold()
++                     
++                        Text("Seller: ")
++                            .offset(x: -150, y: 170)
++                            .bold()
++                    }
++                        Button {
++                            
++                        } label: {
++                            Text("Buy Now")
++                                .foregroundColor(.white)
++                                .bold()
++                                .frame(width: 320, height: 32)
++                                .background(Color(.systemBlue))
++                                .cornerRadius(8)
++                            
++                                .padding()
++                            
++                        }
++                        .offset(x: 50, y: 235)
++                        .offset(x: -50)
++                        
++                        Button {
++                            
++                        } label: {
++                            Text("Make An Offer")
++                                .foregroundColor(.white)
++                                .bold()
++                                .frame(width: 320, height: 32)
++                                .background(Color(.gray))
++                                .cornerRadius(8)
++                           
++                                .padding()
++                            
++                        }
++                        .offset(x: 50, y: 205)
++                        .offset(x: -50)
++                        
++                }
++                .onAppear {
++                    messagepic = tweet.user?.profileImageUrl ?? ""
++                    seller = tweet.user?.username ?? ""
++                }
++            }
++        }
++    }
++}
++
+diff --git a/College Market V.2/Utils/ImageBackend2.swift b/College Market V.2/Utils/ImageBackend2.swift
+new file mode 100644
+index 0000000..00f9abe
+--- /dev/null
++++ b/College Market V.2/Utils/ImageBackend2.swift	
+@@ -0,0 +1,70 @@
++//
++//  ImagePickerGPT.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/29/23.
++//
++
++
++import Foundation
++import UIKit
++import SwiftUI
++
++// Coordinator class to handle UIImagePickerControllerDelegate methods
++class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
++    
++    // Binding for the selected images array
++    @Binding var selectedImages: [UIImage]
++
++    // Coordinator initialization
++    init(selectedImages: Binding<[UIImage]>) {
++        _selectedImages = selectedImages
++    }
++
++    // Method called when an image is picked
++    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
++        // Extract the picked image from the info dictionary
++        if let pickedImage = info[.originalImage] as? UIImage {
++            // Append the picked image to the selectedImages array
++            selectedImages.append(pickedImage)
++        }
++        // Dismiss the ImagePicker
++        picker.dismiss(animated: true, completion: nil)
++    }
++
++    // Method called when the user cancels image picking
++    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
++        // Dismiss the ImagePicker
++        picker.dismiss(animated: true, completion: nil)
++    }
++}
++
++// SwiftUI View representing an Image Picker
++struct ImagePick: UIViewControllerRepresentable {
++    
++    // Binding for the selected images array
++    @Binding var selectedImages: [UIImage]
++
++    // Required method for protocol conformance, but no update needed in this case
++    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePick>) {
++        
++    }
++
++    // Creates and returns a UIImagePickerController configured for picking images from the photo library
++    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePick>) -> UIImagePickerController {
++        let imagePicker = UIImagePickerController()
++        imagePicker.delegate = context.coordinator
++        imagePicker.sourceType = .photoLibrary
++        imagePicker.allowsEditing = false // Set to true if you want to allow editing
++        imagePicker.mediaTypes = ["public.image"]
++        return imagePicker
++    }
++
++    // Required method for protocol conformance, but no update needed in this case
++    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {}
++
++    // Creates and returns the coordinator for the ImagePick
++    func makeCoordinator() -> ImagePickerCoordinator {
++        return ImagePickerCoordinator(selectedImages: $selectedImages)
++    }
++}
+diff --git a/College Market V.2/Utils/PostStruct2.swift b/College Market V.2/Utils/PostStruct2.swift
+new file mode 100644
+index 0000000..e000258
+--- /dev/null
++++ b/College Market V.2/Utils/PostStruct2.swift	
+@@ -0,0 +1,35 @@
++//
++//  PostStruct2.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 1/5/24.
++//
++/*
++import SwiftUI
++import Kingfisher
++
++
++struct PostStruct2: View {
++    let tweet: Tweet
++    
++    @State private var refreshID = UUID()
++
++    var body: some View {
++        VStack(alignment: .leading) {
++            ScrollView(.horizontal) {
++                TabView {
++                    ForEach(tweet.imageUrls ?? [], id: \.self) { imageUrl in
++                        ImageView(url: imageUrl)
++                            .scaledToFill()
++                            .frame(width: 170, height: 170)
++                            .cornerRadius(8)
++                            // Use a new UUID for each ImageView
++                    }
++                }
++                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
++                .frame(height: 170)
++            }
++        }
++    }
++}
++*/
+diff --git a/College Market V.2/Utils/SelectImagestoPostView.swift b/College Market V.2/Utils/SelectImagestoPostView.swift
+new file mode 100644
+index 0000000..ce9cfec
+--- /dev/null
++++ b/College Market V.2/Utils/SelectImagestoPostView.swift	
+@@ -0,0 +1,82 @@
++//
++//  PostStructureView.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/29/23.
++//
++
++import SwiftUI
++
++struct PostStructureView: View {
++    
++    // State variable to control the presentation of the image picker
++    @State private var isImagePickerPresented = false
++    // Binding to track the selected images
++    @Binding var selectedImages: [UIImage]
++    
++    // Subview responsible for displaying selected images in a TabView
++    struct ImageGalleryView: View {
++        // Binding to track the selected images
++        @Binding var selectedImages: [UIImage]
++
++        var body: some View {
++            if !selectedImages.isEmpty {
++                TabView {
++                    // Display each selected image in a resizable, clipped, and rounded rectangle
++                    ForEach(selectedImages, id: \.self) { image in
++                        Image(uiImage: image)
++                            .resizable()
++                            .scaledToFill()
++                            .frame(width: 364, height: 228)
++                            .clipped()
++                            .cornerRadius(25)
++                    }
++                }
++                // Customize the TabView style
++                .tabViewStyle(PageTabViewStyle())
++                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .never))
++            } else {
++                // Display a message when no images are selected
++                Text("No images selected")
++            }
++        }
++    }
++    
++    var body: some View {
++        VStack {
++            // Button triggering the presentation of the image picker
++            Button {
++                isImagePickerPresented.toggle()
++            } label: {
++                ZStack {
++                    // Container for the button with rounded corners and border
++                    Rectangle()
++                        .cornerRadius(25)
++                        .frame(width: 365, height: 230)
++                        .foregroundColor(.white)
++                        .overlay(
++                            RoundedRectangle(cornerRadius: 25)
++                                .stroke(Color.gray, lineWidth: 1)
++                        )
++                        .padding()
++                    // Display a "plus" icon if no images are selected, else show the ImageGalleryView
++                    if selectedImages.isEmpty {
++                        Image(systemName: "plus")
++                            .foregroundColor(Color(.systemBlue))
++                            .padding()
++                            .font(.largeTitle)
++                    } else {
++                        ImageGalleryView(selectedImages: $selectedImages)
++                            .frame(width: 365, height: 230) // Match the button size
++                            .clipped() // Ensure the images don't overflow the frame
++                    }
++                }
++                // Present the image picker when the button is tapped
++                .sheet(isPresented: $isImagePickerPresented) {
++                    ImagePick(selectedImages: $selectedImages)
++                }
++                .padding()
++            }
++        }
++    }
++}
+diff --git a/College Market V.2/Utils/ViewTweetsGoin.swift b/College Market V.2/Utils/ViewTweetsGoin.swift
+new file mode 100644
+index 0000000..9ee206f
+--- /dev/null
++++ b/College Market V.2/Utils/ViewTweetsGoin.swift	
+@@ -0,0 +1,6 @@
++//
++//  ViewTweetsGoin.swift
++//  College Market V.2
++//
++//  Created by Adam Essawi on 12/29/23.
++//
